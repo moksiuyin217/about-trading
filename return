@@ -1,0 +1,16 @@
+#Calculate the top 5 stocks with best return from the given date
+
+import pandas as pd
+import yfinance as yf
+def sort_stock_return(stock_list,from_date,num_result=5):
+    data = pd.read_excel(stock_list)
+    result_dict = {}
+    for code in range (0,len(data.index)):
+        stock = data.iloc[code]
+        stock_code = stock['Stock code']
+        stock_data = yf.download(stock_code,from_date)
+        rets = 100*(stock_data.iloc[-1]['Adj Close']-stock_data.iloc[0]['Adj Close'])/stock_data.iloc[0]['Adj Close']
+        result_dict[stock_code] = rets
+    result = pd.DataFrame(data=result_dict,index=['Return %']).T
+    sort_result = result.sort_values(by='Return %',ascending=False).iloc[:num_result,]
+    return sort_result
